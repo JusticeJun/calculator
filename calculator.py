@@ -25,11 +25,17 @@ class Main(QDialog):
         layout_equation_solution.addRow(label_equation, self.equation)
         layout_equation_solution.addRow(label_solution, self.solution)
 
-        ### 사칙연상 버튼 생성
+        ### 사칙연산 버튼 생성
         button_plus = QPushButton("+")
         button_minus = QPushButton("-")
         button_product = QPushButton("x")
         button_division = QPushButton("/")
+
+        ### 새로 추가된 계산 버튼 생성
+        button_modulo = QPushButton("%")   
+        button_inverse = QPushButton("1/x")
+        button_square = QPushButton("x\u00b2")  # x^2
+        button_root = QPushButton("\u221ax")    # square root x
 
         ### 사칙연산 버튼을 클릭했을 때, 각 사칙연산 부호가 수식창에 추가될 수 있도록 시그널 설정
         button_plus.clicked.connect(lambda state, operation = "+": self.button_operation_clicked(operation))
@@ -43,10 +49,19 @@ class Main(QDialog):
         layout_operation.addWidget(button_product)
         layout_operation.addWidget(button_division)
 
-        ### =, clear, backspace 버튼 생성
+        ### 새로 추가된 계산 버튼을 layout_operation 레이아웃에 추가
+        layout_operation.addWidget(button_modulo)
+        layout_operation.addWidget(button_inverse)
+        layout_operation.addWidget(button_square)
+        layout_operation.addWidget(button_root)
+
+        ### =, backspace 버튼 생성
         button_equal = QPushButton("=")
-        button_clear = QPushButton("Clear")
         button_backspace = QPushButton("Backspace")
+
+        ### 새로 추가된 C, CE 버튼 생성
+        button_clear = QPushButton("C")
+        button_clear_entry = QPushButton("CE")
 
         ### =, clear, backspace 버튼 클릭 시 시그널 설정
         button_equal.clicked.connect(self.button_equal_clicked)
@@ -54,10 +69,13 @@ class Main(QDialog):
         button_backspace.clicked.connect(self.button_backspace_clicked)
 
         ### =, clear, backspace 버튼을 layout_clear_equal 레이아웃에 추가
-        layout_clear_equal.addWidget(button_clear)
         layout_clear_equal.addWidget(button_backspace)
         layout_clear_equal.addWidget(button_equal)
 
+        ### C, CE 버튼을 layout_clear_equal 레이아웃에 추가
+        layout_clear_equal.addWidget(button_clear)
+        layout_clear_equal.addWidget(button_clear_entry)
+        
         ### 숫자 버튼 생성하고, layout_number 레이아웃에 추가
         ### 각 숫자 버튼을 클릭했을 때, 숫자가 수식창에 입력 될 수 있도록 시그널 설정
         number_button_dict = {}
