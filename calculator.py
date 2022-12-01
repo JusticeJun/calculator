@@ -61,7 +61,7 @@ class Main(QDialog):
         layout_buttons.addWidget(button_backspace, 0, 3)
         layout_buttons.addWidget(button_equal, 5, 3)
 
-        ### C, CE 버튼을 layout_buttons 레이아웃에 추가
+        ### 새로 추가된 C, CE 버튼을 layout_buttons 레이아웃에 추가
         layout_buttons.addWidget(button_clear, 0, 2)
         layout_buttons.addWidget(button_clear_entry, 0, 1)
 
@@ -115,14 +115,22 @@ class Main(QDialog):
         self.equation.setText(equation)
 
     def button_operation_clicked(self, operation):
-        self.num = int(self.equation.text())
+        self.num = float(self.equation.text())
         self.operation = operation
         self.equation.setText("")
 
     def button_equal_clicked(self):
-        first = str(self.num)
-        equation = first + self.operation + self.equation.text()
-        self.equation.setText(str(eval(equation)))
+        first = self.num
+        second = float(self.equation.text())
+        if self.operation == "+":
+            equation = first + second
+        elif self.operation == "-":
+            equation = first - second
+        elif self.operation == "*":
+            equation = first * second
+        elif self.operation == "/":
+            equation = first / second            
+        self.equation.setText(str(equation))
         
     def button_clear_clicked(self):
         self.equation.setText("")
