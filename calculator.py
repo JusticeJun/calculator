@@ -20,6 +20,15 @@ class Main(QDialog):
         ### 첫 수를 입력받았으면 두 번째 수와 더하기 위해 저장할 변수를 만들어 둠 
         self.num = 0
 
+        ### 등호 반복해서 누르면 계산 또 되지 않게 막기위한 변수
+        self.isCalculated = False
+        
+        ### 연산자 두 번 누르지 못 하도록
+        self.isOperatorClicked = False
+
+        ### 이항 연산자일때만 등호 누를 수 있도록 하기 위한 변수
+        self.isunary = False
+
         ### layout_equation_solution 레이아웃에 수식, 답 위젯을 추가
         layout_equation_solution.addRow(self.equation)
 
@@ -66,17 +75,26 @@ class Main(QDialog):
         layout_buttons.addWidget(button_clear_entry, 0, 1)
 
         ### 시그널 설정 ###
-        ### 사칙연산 버튼을 클릭했을 때, 각 사칙연산 부호가 수식창에 추가될 수 있도록 시그널 설정
+        ### 사칙연산 버튼을 클릭했을 때, 각 사칙연산에 맞는 연산을 수행하도록 시그널 설정
         button_plus.clicked.connect(lambda state, operation = "+": self.button_operation_clicked(operation))
         button_minus.clicked.connect(lambda state, operation = "-": self.button_operation_clicked(operation))
         button_product.clicked.connect(lambda state, operation = "*": self.button_operation_clicked(operation))
         button_division.clicked.connect(lambda state, operation = "/": self.button_operation_clicked(operation))
+        
+        ### 새로 추가된 연산자 버튼을 클릭했을 때, 각 연산에 맞는 연산을 수행하도록 시그널 설정
+        button_modulo.clicked.connect(lambda state, operation = "%": self.button_operation_clicked(operation))
+        button_inverse.clicked.connect(lambda state, operation = "inverse": self.button_operation_clicked(operation))
+        button_root.clicked.connect(lambda state, operation = "root": self.button_operation_clicked(operation))
+        button_square.clicked.connect(lambda state, operation = "square": self.button_operation_clicked(operation))
 
-        ### =, clear, backspace 버튼 클릭 시 시그널 설정
+        ### =, backspace 버튼 클릭 시 시그널 설정
         button_equal.clicked.connect(self.button_equal_clicked)
-        button_clear.clicked.connect(self.button_clear_clicked)
         button_backspace.clicked.connect(self.button_backspace_clicked)
         
+        ### C, CE 버튼 클릭 시 시그널 설정
+        button_clear.clicked.connect(self.button_clear_clicked)
+        button_clear_entry.clicked.connect(self.button_clear_entry_clicked)
+
         ### 숫자 버튼 생성하고, layout_buttons 레이아웃에 추가
         ### 각 숫자 버튼을 클릭했을 때, 숫자가 수식창에 입력 될 수 있도록 시그널 설정
         number_button_dict = {}
@@ -110,29 +128,61 @@ class Main(QDialog):
     ### functions ###
     #################
     def number_button_clicked(self, num):
+        self.isCalculated = False
         equation = self.equation.text()
         equation += str(num)
         self.equation.setText(equation)
 
     def button_operation_clicked(self, operation):
-        self.num = float(self.equation.text())
-        self.operation = operation
-        self.equation.setText("")
+        self.isCalculated = False
+        if self.isOperatorClicked == False:
+            if operation == "inverse":
+                self.num = float(self.equation.text())
+                self.num = 1 / self.num
+                self.equation.setText(str(self.num))
+                self.isunary = True
+            elif operation == "root":
+                self.num = float(self.equation.text())
+                self.num = self.num ** 0.5
+                self.equation.setText(str(self.num))
+                self.isunary = True
+            elif operation == "square":
+                self.num = float(self.equation.text())
+                self.num = self.num ** 2
+                self.equation.setText(str(self.num))
+                self.isunary = True
+            else:
+                self.num = float(self.equation.text())
+                self.isunary = False
+                self.isOperatorClicked = True
+                self.operation = operation
+                self.equation.setText("")
 
     def button_equal_clicked(self):
-        first = self.num
-        second = float(self.equation.text())
-        if self.operation == "+":
-            equation = first + second
-        elif self.operation == "-":
-            equation = first - second
-        elif self.operation == "*":
-            equation = first * second
-        elif self.operation == "/":
-            equation = first / second            
-        self.equation.setText(str(equation))
-        
+        if self.isCalculated == False:       
+            if self.isunary == False:
+                self.isOperatorClicked = False
+                first = self.num
+                second = float(self.equation.text())
+                if self.operation == "+":
+                    equation = first + second
+                elif self.operation == "-":
+                    equation = first - second
+                elif self.operation == "*":
+                    equation = first * second
+                elif self.operation == "/":
+                    equation = first / second
+                elif self.operation == "%":
+                    equation = first % second            
+                self.equation.setText(str(equation))
+                self.isCalculated = True
+                
     def button_clear_clicked(self):
+        self.isCalculated = False
+        self.equation.setText("")
+
+    def button_clear_entry_clicked(self):
+        self.isCalculated = False
         self.equation.setText("")
 
     def button_backspace_clicked(self):
